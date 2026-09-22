@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — Ben &amp; Bite's</title>
+    <meta name="description" content="Review your order and complete payment.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo"><span class="logo-mark"></span>Ben &amp; Bite's</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="checkout-section" id="checkout-view">
+            <a href="index.html#featured" class="back-link">&larr; Back to menu</a>
+            <h1>Checkout</h1>
+            <p class="checkout-sub">Review your order, then pay to confirm.</p>
+
+            <div class="order-summary" id="order-summary">
+            </div>
+
+            <form class="checkout-form" id="payment-form">
+                <div class="field">
+                    <label for="full-name">Full name</label>
+                    <input type="text" id="full-name" name="full-name" placeholder="Your full name" required>
+                </div>
+
+                <div class="field">
+                    <label for="checkout-email">Email</label>
+                    <input type="email" id="checkout-email" name="checkout-email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="field">
+                    <label for="address">Delivery address</label>
+                    <input type="text" id="address" name="address" placeholder="Street, city" required>
+                </div>
+
+                <button type="submit" class="pay-btn" id="pay-btn">Pay &amp; Place Order</button>
+            </form>
+        </section>
+
+        <section class="confirmation" id="confirmation-view">
+            <h2>Order confirmed!</h2>
+            <p id="confirmation-text"></p>
+            <a href="index.html" class="btn btn-primary" style="display:inline-block;margin-top:20px;">Back to home</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ben &amp; Bite's</p>
+    </footer>
+
+    <script>
+        const PRICES = {
+            "Spicy Tandoori": 199.50,
+            "Beef Bacon": 199.50,
+            "BBQ Chicken": 199.50,
+            "Creamy Mushroom": 199.50,
+            "Beef Burger": 199.50,
+            "Cheese Burger": 199.50,
+            "Hawaiian Burger": 199.50,
+            "Spicy Buffalo": 199.50,
+            "Crispy Chicken": 199.50
+        };
+        const DELIVERY_FEE = 100;
+
+        const params = new URLSearchParams(window.location.search);
+        const itemName = params.get('item') || 'Beef Bacon';
+        const price = PRICES[itemName] !== undefined ? PRICES[itemName] : 199.50;
+        let qty = 1;
+
+        function renderSummary() {
+            const subtotal = price * qty;
+            const total = subtotal + DELIVERY_FEE;
+            document.getElementById('order-summary').innerHTML = `
+                <div class="order-line">
+                    <span>${itemName}</span>
+                    <div class="qty-controls">
+                        <button type="button" id="qty-minus" aria-label="Decrease quantity">&minus;</button>
+                        <span id="qty-value">${qty}</span>
+                        <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
+                        <span>₱${subtotal.toFixed(2)}</span>
+                    </div>
+                </div>
+                <div class="order-line">
+                    <span>Delivery fee</span>
+                    <span>₱${DELIVERY_FEE.toFixed(2)}</span>
+                </div>
+                <div class="order-total">
+                    <span>Total</span>
+                    <span id="order-total-value">₱${total.toFixed(2)}</span>
+                </div>
+            `;
+            document.getElementById('qty-minus').addEventListener('click', () => {
+                if (qty > 1) { qty--; renderSummary(); }
+            });
+            document.getElementById('qty-plus').addEventListener('click', () => {
+                qty++; renderSummary();
+            });
+        }
+
+        renderSummary();
+
+        document.getElementById('payment-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const total = (price * qty + DELIVERY_FEE).toFixed(2);
+            document.getElementById('confirmation-text').textContent =
+                `Thanks! Your ${itemName} order (x${qty}) for ₱${total} is on its way to the kitchen.`;
+            document.getElementById('checkout-view').style.display = 'none';
+            document.getElementById('confirmation-view').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+
+</body>
+</html>
